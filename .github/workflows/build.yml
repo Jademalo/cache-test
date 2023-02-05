@@ -2,10 +2,11 @@ name: Build Release
 
 on:
   workflow_dispatch:
-      container:
-        description: 'Run with container'
-        required: false
-        type: boolean
+      inputs:
+          container:
+            description: 'Run with container'
+            required: false
+            type: boolean
 
 jobs:
   cache-tools:
