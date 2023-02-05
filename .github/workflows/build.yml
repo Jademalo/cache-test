@@ -1,0 +1,109 @@
+name: Build Release
+
+on:
+  workflow_dispatch:
+      container:
+        description: 'Run with container'
+        required: false
+        type: boolean
+
+jobs:
+  cache-tools:
+    if: ${{ inputs.container != true }}
+    runs-on: ubuntu-latest
+
+    steps:
+    
+      - name: Install binutils
+        run: sudo apt install gcc-arm-none-eabi binutils-arm-none-eabi
+        
+      # cache the tools necessary for building the ROM, including poryscript and agbcc
+      - name: Cache Tools
+        id: tools
+        uses: actions/cache@v3
+        with:
+          path: tools
+          key: ${{ runner.os }}-tools
+
+      # build and install agbcc into the tools directory
+      - name: Clone agbcc
+        uses: actions/checkout@master
+        with:
+          path: 'tmp/agbcc'
+          repository: 'pret/agbcc'
+
+      - name: Build and Install agbcc
+        run: |
+          ./build.sh
+          ./install.sh $GITHUB_WORKSPACE
+        working-directory: tmp/agbcc
+
+      # build and install poryscript into the tools directory
+      - name: Set up Go
+        id: go
+        uses: actions/setup-go@v3.5.0
+        with:
+          go-version: 'stable'
+
+      - name: Clone Poryscript
+        uses: actions/checkout@master
+        with:
+          path: 'tmp/poryscript'
+          repository: 'huderlem/poryscript'
+
+      - name: Install Poryscript
+        run: |
+          go build
+          ./install.sh $GITHUB_WORKSPACE
+        working-directory: tmp/poryscript
+        
+        
+  cache-tools-container:
+    if: ${{ inputs.container == true }}
+    runs-on: ubuntu-latest
+    container: jademalo/pokegba-build:latest
+
+    steps:
+    
+      - name: Install binutils
+        run: sudo apt install gcc-arm-none-eabi binutils-arm-none-eabi
+        
+      # cache the tools necessary for building the ROM, including poryscript and agbcc
+      - name: Cache Tools
+        id: tools
+        uses: actions/cache@v3
+        with:
+          path: tools
+          key: ${{ runner.os }}-tools
+
+      # build and install agbcc into the tools directory
+      - name: Clone agbcc
+        uses: actions/checkout@master
+        with:
+          path: 'tmp/agbcc'
+          repository: 'pret/agbcc'
+
+      - name: Build and Install agbcc
+        run: |
+          ./build.sh
+          ./install.sh $GITHUB_WORKSPACE
+        working-directory: tmp/agbcc
+
+      # build and install poryscript into the tools directory
+      - name: Set up Go
+        id: go
+        uses: actions/setup-go@v3.5.0
+        with:
+          go-version: 'stable'
+
+      - name: Clone Poryscript
+        uses: actions/checkout@master
+        with:
+          path: 'tmp/poryscript'
+          repository: 'huderlem/poryscript'
+
+      - name: Install Poryscript
+        run: |
+          go build
+          ./install.sh $GITHUB_WORKSPACE
+        working-directory: tmp/poryscript
