@@ -16,7 +16,7 @@ jobs:
     steps:
     
       - name: Install binutils
-        run: sudo apt install gcc-arm-none-eabi binutils-arm-none-eabi
+        run: sudo apt-get install -y gcc-arm-none-eabi binutils-arm-none-eabi
         
       # cache the tools necessary for building the ROM, including poryscript and agbcc
       - name: Cache Tools
@@ -67,7 +67,7 @@ jobs:
     steps:
     
       - name: Install binutils
-        run: sudo apt install gcc-arm-none-eabi binutils-arm-none-eabi
+        run: sudo apt-get install -y gcc-arm-none-eabi binutils-arm-none-eabi
         
       # cache the tools necessary for building the ROM, including poryscript and agbcc
       - name: Cache Tools
